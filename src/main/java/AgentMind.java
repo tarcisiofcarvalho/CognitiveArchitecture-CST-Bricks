@@ -18,6 +18,7 @@
  *****************************************************************************/
 
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import codelets.behaviors.Forage;
@@ -50,7 +51,7 @@ public class AgentMind extends Mind {
                 super();
                 
                 // Declare Memory Objects
-	        MemoryObject legsMO;
+	        MemoryContainer legsMO;
 	        MemoryObject handsMO;
                 MemoryObject visionMO;
                 MemoryObject innerSenseMO;
@@ -61,7 +62,8 @@ public class AgentMind extends Mind {
                 
                 //Initialize Memory Objects
                 
-                legsMO=createMemoryObject("LEGS", "");
+                legsMO=createMemoryContainer("LEGS");
+                legsMO.setI("",0.0);
                 
 		handsMO=createMemoryObject("HANDS", "");
                 
@@ -155,7 +157,7 @@ public class AgentMind extends Mind {
                 
                 // sets a time step for running the codelets to avoid heating too much your machine
                 for (Codelet c : this.getCodeRack().getAllCodelets())
-                    c.setTimeStep(100);
+                    c.setTimeStep(50);
 		
 		// Start Cognitive Cycle
 		start(); 

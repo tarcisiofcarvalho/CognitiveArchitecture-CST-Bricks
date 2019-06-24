@@ -23,6 +23,7 @@ package codelets.motor;
 import org.json.JSONObject;
 
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ import ws3dproxy.model.Creature;
 
 public class LegsActionCodelet extends Codelet{
 
-	private MemoryObject legsActionMO;
+	private MemoryContainer legsActionMO;
         private MemoryObject handsActionMO;
 	private double previousTargetx=0;
 	private double previousTargety=0;
@@ -55,7 +56,7 @@ public class LegsActionCodelet extends Codelet{
 	
 	@Override
 	public void accessMemoryObjects() {
-		legsActionMO=(MemoryObject)this.getInput("LEGS");
+		legsActionMO=(MemoryContainer)this.getInput("LEGS");
                 handsActionMO=(MemoryObject)this.getInput("HANDS");
 	}
 	
@@ -78,17 +79,16 @@ public class LegsActionCodelet extends Codelet{
                                         int x=0,y=0;
                                         String action=command.getString("ACTION");
                                         if(action.equals("FORAGE")){
-                                                   //if (!comm.equals(previousLegsAction)) { 
-                                                   if (!comm.equals(previousLegsAction)) 
-                                                        log.info("Sending Forage command to agent");
-                                                    try {  
-                                                          c.rotate(2);  
-                                                          System.out.println("Motor > FORAGE");
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
-                                            }
-                                        else if(action.equals("GOTO")){
+                                            //if (!comm.equals(previousLegsAction)) { 
+                                            if (!comm.equals(previousLegsAction)) 
+                                                 log.info("Sending Forage command to agent");
+                                             try {  
+                                                   c.rotate(2);  
+                                                   System.out.println("Motor > FORAGE");
+                                             } catch (Exception e) {
+                                                 e.printStackTrace();
+                                             }
+                                        }else if(action.equals("GOTO")){
                                             if (!comm.equals(previousLegsAction)) {
                                                 double speed=command.getDouble("SPEED");
                                                 double targetx=command.getDouble("X");

@@ -20,6 +20,7 @@
 package codelets.behaviors;
 
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +29,9 @@ import support.Status;
 public class Forage extends Codelet {
     
         private MemoryObject statusMO;
-        private MemoryObject legsMO;
+        private MemoryContainer legsMO;
         
+        int objectId = -1;
 	/**
 	 * Default constructor
 	 */
@@ -39,7 +41,7 @@ public class Forage extends Codelet {
 	@Override
 	public void accessMemoryObjects() {
             statusMO = (MemoryObject) this.getInput("STATUS");
-            legsMO=(MemoryObject)this.getOutput("LEGS");	
+            legsMO=(MemoryContainer)this.getOutput("LEGS");	
 	}
         
 	@Override
@@ -49,7 +51,12 @@ public class Forage extends Codelet {
 		JSONObject message=new JSONObject();
                 try {
                         message.put("ACTION", "FORAGE");
-                        legsMO.updateI(message.toString());
+                        if(objectId==-1){
+                            objectId = legsMO.setI(message.toString(),0.5);
+                        }else{
+                            legsMO.setI(message.toString(),0.5,objectId);
+                        }
+                        
                         System.out.println("Behaviours > Forage");
 
                 } catch (JSONException e) {

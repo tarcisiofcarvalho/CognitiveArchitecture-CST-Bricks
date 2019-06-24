@@ -2,6 +2,7 @@ package codelets.behaviors;
 
 import org.json.JSONObject;
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,10 +19,12 @@ public class GoToNextStep extends Codelet {
         private MemoryObject lastStepMO;
         private MemoryObject statusMO;
 	private MemoryObject selfInfoMO;
-	private MemoryObject legsMO;
+	private MemoryContainer legsMO;
 	private int creatureBasicSpeed;
 	private double reachDistance;
         private Creature c;
+        
+        int objectId = -1;
         
 	public GoToNextStep(int creatureBasicSpeed, int reachDistance, Creature c) {
 		this.creatureBasicSpeed=creatureBasicSpeed;
@@ -35,7 +38,7 @@ public class GoToNextStep extends Codelet {
                 lastStepMO=(MemoryObject)this.getInput("LAST");
                 statusMO=(MemoryObject)this.getInput("STATUS");
 		selfInfoMO=(MemoryObject)this.getInput("INNER");
-                legsMO=(MemoryObject)this.getOutput("LEGS");
+                legsMO=(MemoryContainer)this.getOutput("LEGS");
 	}
 
 	@Override
@@ -50,13 +53,19 @@ public class GoToNextStep extends Codelet {
                     double distance = calculateDistance(cis.position.getX(), cis.position.getY(),700.0,300.0);
                     JSONObject message=new JSONObject();
                     if(distance<reachDistance){
+                        
                         message.put("ACTION", "STOP");
-                        legsMO.updateI(message.toString());
+                        if(objectId==-1){
+                            objectId = legsMO.setI(message.toString(),0.9);
+                        }else{
+                            legsMO.setI(message.toString(),0.9, objectId);
+                        }
+
                         status.setGameGoalStatus(true);
                         System.out.println("Game completed");
                         try 
 	                {
-	                     Thread.sleep(4000);
+	                     Thread.sleep(500);
 	                } catch (Exception e){
 	                     e.printStackTrace();
 	                }
@@ -70,7 +79,11 @@ public class GoToNextStep extends Codelet {
 //                                System.out.println("Creature position: " + c.getPosition().getX() + " x " + c.getPosition().getY());
                                 if(lastStep.getX()==nextStep.getX() && lastStep.getY()==nextStep.getY()){
                                     System.out.println("Behaviours > Same step");
-                                    legsMO.updateI("");
+                                    if(objectId==-1){
+                                        objectId = legsMO.setI("",0.0);
+                                    }else{
+                                        legsMO.setI("",0.0, objectId);
+                                    }
                                     return;
                                 }else{
 
@@ -80,13 +93,18 @@ public class GoToNextStep extends Codelet {
                                         lastStepMO.setI(lastStep);
                                         double nextCellX = nextStep.getX()*50;
                                         double nextCellY = nextStep.getY()*50;
-    //                                message.put("ACTION", "GOTO");
-    //                                message.put("X", nextCellX);
-    //                                message.put("Y", nextCellY);
-    //                                message.put("SPEED", creatureBasicSpeed);
-                                        c.moveto(creatureBasicSpeed, nextCellX, nextCellY);
+                                        message.put("ACTION", "GOTO");
+                                        message.put("X", nextCellX);
+                                        message.put("Y", nextCellY);
+                                        message.put("SPEED", creatureBasicSpeed);
+                                        if(objectId==-1){
+                                            objectId = legsMO.setI(message.toString(),0.7);
+                                        }else{
+                                            legsMO.setI(message.toString(),0.7, objectId);
+                                        }
+                                        //c.moveto(creatureBasicSpeed, nextCellX, nextCellY);
                                         System.out.println("Behaviours > Next step: " + nextCellX + " x " + nextCellY);
-                                    } catch (CommandExecException ex) {
+                                    } catch (Exception ex) {
                                         ex.printStackTrace();
                                         Logger.getLogger(GoToNextStep.class.getName()).log(Level.SEVERE, null, ex);
                                     }
@@ -97,7 +115,7 @@ public class GoToNextStep extends Codelet {
                             }
                         }
                     }
-                    legsMO.updateI(message.toString());
+                    //legsMO.updateI(message.toString());
                 }
                 
             }
